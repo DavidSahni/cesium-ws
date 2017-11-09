@@ -6,70 +6,75 @@
     //////////////////////////////////////////////////////////////////////////
     // Creating the Viewer
     //////////////////////////////////////////////////////////////////////////
-
-    // var viewer = new Cesium.Viewer('cesiumContainer');
-    //
-    // var viewer = new Cesium.Viewer('cesiumContainer', {
-    //     scene3DOnly: true,
-    //     selectionIndicator: false,
-    //     baseLayerPicker: false
-    // });
+	
+	//simple default globe w 9 widgets
+    //var viewer = new Cesium.Viewer('cesiumContainer');
+    
+	//pass an options object as a parameter when creating
+	
+    var viewer = new Cesium.Viewer('cesiumContainer', {
+        scene3DOnly: true,
+        selectionIndicator: false,
+        baseLayerPicker: false
+    });
 
     //////////////////////////////////////////////////////////////////////////
     // Loading Imagery
     //////////////////////////////////////////////////////////////////////////
 
-    // Add Bing imagery
-    // viewer.imageryLayers.addImageryProvider(new Cesium.BingMapsImageryProvider({
-    //     url : 'https://dev.virtualearth.net',
-    //     mapStyle: Cesium.BingMapsStyle.AERIAL // Can also use Cesium.BingMapsStyle.ROAD
-    // }));
+    //Add Bing imagery
+    viewer.imageryLayers.addImageryProvider(new Cesium.BingMapsImageryProvider({
+        url : 'https://dev.virtualearth.net',
+        mapStyle: Cesium.BingMapsStyle.AERIAL// Can also use Cesium.BingMapsStyle.ROAD
+    }));
 
     //////////////////////////////////////////////////////////////////////////
     // Loading Terrain
     //////////////////////////////////////////////////////////////////////////
 
     // // Load STK World Terrain
-    // viewer.terrainProvider = new Cesium.CesiumTerrainProvider({
-    //     url : 'https://assets.agi.com/stk-terrain/world',
-    //     requestWaterMask : true, // required for water effects
-    //     requestVertexNormals : false // required for terrain lighting
-    // });
+    viewer.terrainProvider = new Cesium.CesiumTerrainProvider({
+        url : 'https://assets.agi.com/stk-terrain/world',
+        requestWaterMask : true, // required for water effects
+        requestVertexNormals : false // required for terrain lighting
+    });
     // // Enable depth testing so things behind the terrain disappear.
-    // viewer.scene.globe.depthTestAgainstTerrain = true;
+    viewer.scene.globe.depthTestAgainstTerrain = true;
 
     //////////////////////////////////////////////////////////////////////////
     // Configuring the Scene
     //////////////////////////////////////////////////////////////////////////
 
     // // Enable lighting based on sun/moon positions
-    // viewer.scene.globe.enableLighting = true;
+    viewer.scene.globe.enableLighting = true;
+    
+    // Create an initial camera view
+	//a position (out of a Cartesian3 type
+    var initialPosition = new Cesium.Cartesian3.fromDegrees(-73.998114468289017509, 40.674512895646692812, 2631.082799425431);
+    //an orientation made from a HeadingPitchRoll type
+	var initialOrientation = new Cesium.HeadingPitchRoll.fromDegrees(7.1077496389876024807, -31.987223091598949054, 0.025883251314954971306);
+    var homeCameraView = {
+        destination : initialPosition,
+        orientation : {
+            heading : initialOrientation.heading,
+            pitch : initialOrientation.pitch,
+            roll : initialOrientation.roll
+        }
+    };
+    // Set the initial view
+    viewer.scene.camera.setView(homeCameraView);
     //
-    // // Create an initial camera view
-    // var initialPosition = new Cesium.Cartesian3.fromDegrees(-73.998114468289017509, 40.674512895646692812, 2631.082799425431);
-    // var initialOrientation = new Cesium.HeadingPitchRoll.fromDegrees(7.1077496389876024807, -31.987223091598949054, 0.025883251314954971306);
-    // var homeCameraView = {
-    //     destination : initialPosition,
-    //     orientation : {
-    //         heading : initialOrientation.heading,
-    //         pitch : initialOrientation.pitch,
-    //         roll : initialOrientation.roll
-    //     }
-    // };
-    // // Set the initial view
-    // viewer.scene.camera.setView(homeCameraView);
-    //
-    // // Add some camera flight animation options
-    // homeCameraView.duration = 2.0;
-    // homeCameraView.maximumHeight = 2000;
-    // homeCameraView.pitchAdjustHeight = 2000;
-    // homeCameraView.endTransform = Cesium.Matrix4.IDENTITY;
-    // // Override the default home button
-    // viewer.homeButton.viewModel.command.beforeExecute.addEventListener(function (e) {
-    //     e.cancel = true;
-    //     viewer.scene.camera.flyTo(homeCameraView);
-    // });
-    //
+    // Add some camera flight animation options
+    homeCameraView.duration = 7.0;
+    homeCameraView.maximumHeight = 2000;
+    homeCameraView.pitchAdjustHeight = 2000;
+    homeCameraView.endTransform = Cesium.Matrix4.IDENTITY;
+    // Override the default home button
+    viewer.homeButton.viewModel.command.beforeExecute.addEventListener(function (e) {
+        e.cancel = true;
+        viewer.scene.camera.flyTo(homeCameraView);
+    });
+    
     // // Set up clock and timeline.
     // viewer.clock.shouldAnimate = true; // default
     // viewer.clock.startTime = Cesium.JulianDate.fromIso8601("2017-07-11T16:00:00Z");
